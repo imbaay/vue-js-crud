@@ -45,8 +45,6 @@
                     icon
                     outlined
                     class="warning"
-                    :to="`/posts/edit/${post.id}`"
-                    @click="editPost"
                     :id="post.id"
                   >
                     <v-icon small>mdi-pencil</v-icon>
@@ -79,21 +77,17 @@ import PostDataService from "../../services/PostDataService";
 export default {
   name: "Post",
 
-  data: () => ({
-    posts: [],
-  }),
+  computed: {
+    posts() {
+      return this.$store.getters.getAllPosts;
+    },
+  },
+
+  created() {
+    this.$store.dispatch('getAllPosts');
+  },
 
   methods: {
-    getAllPosts() {
-      PostDataService.getAll()
-        .then((response) => {
-          this.posts = response.data;
-        })
-        .catch((e) => {
-          console.log(e);
-        });
-    },
-
     deletePost(e) {
       let postId = e.currentTarget.id;
 
@@ -108,22 +102,6 @@ export default {
           console.log(e);
         });
     },
-
-    editPost(e) {
-      let postId = e.currentTarget.id;
-
-      PostDataService.get(postId).then(res => {
-        this.title = res.data.title;
-        this.description = res.data.description;
-        this.content = res.data.content;
-        this.author = res.data.author;
-        console.log(res.data);
-      });
-    },
-  },
-
-  mounted() {
-    this.getAllPosts();
   },
 };
 </script>
